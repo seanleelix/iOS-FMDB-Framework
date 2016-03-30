@@ -82,6 +82,8 @@
         default:
             break;
     }
+    
+    [self updateDatabaseVersion: database];
 }
 
 -(int)queryDatabaseVersion:(FMDatabase *) database{
