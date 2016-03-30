@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "DatabaseOperation.h"
 
 @interface ViewController ()
 
@@ -16,12 +17,15 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    DatabaseOperation *databaseOperation = [[DatabaseOperation alloc] init];
+    [databaseOperation addPersonWithName:@"test" height:1.7f];
+    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
 }
 
 @end
