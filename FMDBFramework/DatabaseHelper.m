@@ -63,7 +63,6 @@
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     
     [self upgradeDatabase: database];
-    [self updateDatabaseVersion: database];
     
     return database;
 }
