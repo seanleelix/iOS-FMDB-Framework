@@ -1,0 +1,17 @@
+//
+//  DatabaseHelper.h
+//  FMDBTest
+//
+//  Created by Sean Lee on 30/3/2016.
+//  Copyright © 2016 Legato Concept. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@class FMDatabase;
+
+@interface DatabaseHelper : NSObject
+
+@property (nonatomic, strong, readonly) FMDatabase *database;
+
+@end
