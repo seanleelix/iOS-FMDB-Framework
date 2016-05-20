@@ -10,6 +10,6 @@
 
 @interface DatabaseOperation : NSObject
 
--(void) addPersonWithName:(NSString *)name height:(float)height;
+-(void) addPersonWithName:(NSString *)name andHeight:(float)height;
 
 @end

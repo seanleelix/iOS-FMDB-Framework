@@ -28,11 +28,9 @@
     return self;
 }
 
--(void) addPersonWithName:(NSString *)name height:(float)height
+-(void) addPersonWithName:(NSString *)name andHeight:(float)height
 {
-    FMDatabase *database = self.databaseHelper.database;
-    
-    [database open];
+    FMDatabase *database = [self.databaseHelper getDatabase];
     
     #ifdef DATABASE_SECRET_KEY
     if(DATABASE_SECRET_KEY.length)

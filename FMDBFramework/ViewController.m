@@ -19,7 +19,7 @@
     [super viewDidLoad];
     
     DatabaseOperation *databaseOperation = [[DatabaseOperation alloc] init];
-    [databaseOperation addPersonWithName:@"test" height:1.7f];
+    [databaseOperation addPersonWithName:@"test" andHeight:1.7f];
     
 }
 

@@ -12,6 +12,6 @@
 
 @interface DatabaseHelper : NSObject
 
-@property (nonatomic, strong, readonly) FMDatabase *database;
+-(FMDatabase *)getDatabase;
 
 @end

@@ -11,27 +11,40 @@
 #import "FMDatabase.h"
 #import "sqlite3.h"
 
+@interface DatabaseHelper()
+
+@property (nonatomic, strong, readonly) FMDatabase *database;
+@property (nonatomic, strong) NSString *dbPath;
+
+@end
+
 @implementation DatabaseHelper
 
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        NSString *dbPath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:DATABASE_NAME];
+        self.dbPath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:DATABASE_NAME];
         
-        NSLog(@"DB PATH:%@", dbPath);
+        NSLog(@"DB PATH:%@", self.dbPath);
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        BOOL dbExist = [fileManager fileExistsAtPath:dbPath];
+        BOOL dbExist = [fileManager fileExistsAtPath:self.dbPath];
         
         if(dbExist){
-            if(DATABASE_VERSION != [self queryDatabaseVersion:(_database = [FMDatabase databaseWithPath:dbPath])])
+            if(DATABASE_VERSION != [self queryDatabaseVersion:(_database = [FMDatabase databaseWithPath:self.dbPath])])
                 [self upgradeDatabase: self.database];
         }else{
-            _database = [self createDatabase:fileManager databasePath:dbPath];
+            _database = [self createDatabase:fileManager databasePath:self.dbPath];
         }
     }
     return self;
+}
+
+-(FMDatabase *)getDatabase{
+    _database = [FMDatabase databaseWithPath:self.dbPath];
+    [_database open];
+    return _database;
 }
 
 -(FMDatabase *) createDatabase:(NSFileManager *) fileManager databasePath:(NSString *)dbPath{
