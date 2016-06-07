@@ -32,10 +32,10 @@
         BOOL dbExist = [fileManager fileExistsAtPath:self.dbPath];
         
         if(dbExist){
-            if(DATABASE_VERSION != [self queryDatabaseVersion:(_database = [FMDatabase databaseWithPath:self.dbPath])])
-                [self upgradeDatabase: self.database];
+            if(DATABASE_VERSION > [self queryDatabaseVersion:[self getDatabase]])
+                [self upgradeDatabase: [self getDatabase]];
         }else{
-            _database = [self createDatabase:fileManager databasePath:self.dbPath];
+            [self createDatabase:fileManager databasePath:self.dbPath];
         }
     }
     return self;
@@ -47,12 +47,12 @@
     return _database;
 }
 
--(FMDatabase *) createDatabase:(NSFileManager *) fileManager databasePath:(NSString *)dbPath{
+-(void) createDatabase:(NSFileManager *) fileManager databasePath:(NSString *)dbPath{
     
+    // In Bundle
     NSString *databasePathFromApp = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:DATABASE_NAME];
     
-    #ifdef DATABASE_SECRET_KEY
-    
+#ifdef DATABASE_SECRET_KEY
     NSLog(@"createDatabase with sqlcipher");
     
     const char* sqlQ = [[NSString stringWithFormat:@"ATTACH DATABASE '%@' AS encrypted KEY '%@';", dbPath, DATABASE_SECRET_KEY] UTF8String];
@@ -67,17 +67,12 @@
         sqlite3_close(unencrypted_DB);
         NSAssert1(NO, @"Failed to open database with message '%s'.", sqlite3_errmsg(unencrypted_DB));
     }
-    #else
+#else
     NSLog(@"createDatabase");
     
     [fileManager copyItemAtPath:databasePathFromApp toPath:dbPath error:nil];
-    #endif
+#endif
     
-    FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
-    
-    [self upgradeDatabase: database];
-    
-    return database;
 }
 
 -(void) upgradeDatabase:(FMDatabase *) database{
@@ -89,7 +84,7 @@
             
         }
         case 2:{
-        
+            
         }
         default:
             break;
@@ -99,14 +94,13 @@
 }
 
 -(int)queryDatabaseVersion:(FMDatabase *) database{
-
-    int databaseVersion;
-    [database open];
     
-    #ifdef DATABASE_SECRET_KEY
+    int databaseVersion = 0;
+    
+#ifdef DATABASE_SECRET_KEY
     if(DATABASE_SECRET_KEY.length)
         [database setKey:DATABASE_SECRET_KEY];
-    #endif
+#endif
     
     FMResultSet *result = [database executeQuery:@"PRAGMA user_version"];
     if([result next]){
@@ -118,17 +112,15 @@
 }
 
 -(void)updateDatabaseVersion:(FMDatabase *) database{
-
-    [database open];
     
-    #ifdef DATABASE_SECRET_KEY
+#ifdef DATABASE_SECRET_KEY
     if(DATABASE_SECRET_KEY.length)
         [database setKey:DATABASE_SECRET_KEY];
-    #endif
+#endif
     
     [database executeUpdate:[NSString stringWithFormat:@"PRAGMA user_version = %d", DATABASE_VERSION]];
     
     [database close];
 }
-    
+
 @end
