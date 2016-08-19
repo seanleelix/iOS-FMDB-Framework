@@ -31,12 +31,14 @@
         NSFileManager *fileManager = [NSFileManager defaultManager];
         BOOL dbExist = [fileManager fileExistsAtPath:self.dbPath];
         
-        if(dbExist){
-            if(DATABASE_VERSION > [self queryDatabaseVersion:[self getDatabase]])
-                [self upgradeDatabase: [self getDatabase]];
-        }else{
+        if(!dbExist){
             [self createDatabase:fileManager databasePath:self.dbPath];
         }
+        
+        int currentVersion = [self queryDatabaseVersion:[self getDatabase]];
+        
+        if(DATABASE_VERSION > currentVersion)
+            [self upgradeDatabase: [self getDatabase] oldVersion:currentVersion];
     }
     return self;
 }
@@ -75,16 +77,19 @@
     
 }
 
--(void) upgradeDatabase:(FMDatabase *) database{
+-(void) upgradeDatabase:(FMDatabase *) database oldVersion:(int)oldVersion{
     
-    NSLog(@"upgradeDatabase");
+    NSLog(@"upgradeDatabase oldVersion:%d newVersion:%d", oldVersion, DATABASE_VERSION);
     
-    switch (DATABASE_VERSION) {
-        case 3:{
-            
+    switch (oldVersion) {
+        case 0:{
+            NSLog(@"case 0");
+        }
+        case 1:{
+            NSLog(@"case 1");
         }
         case 2:{
-            
+            NSLog(@"case 2");
         }
         default:
             break;
