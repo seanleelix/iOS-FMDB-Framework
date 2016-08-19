@@ -10,7 +10,7 @@
 #define DatabaseConstants_h
 
 #define DATABASE_NAME @"DemoDatabase.sqlite"
-#define DATABASE_VERSION 1
+#define DATABASE_VERSION 3
 
 // Uncomment this line if use sqlcipher
 // #define DATABASE_SECRET_KEY @"password"
