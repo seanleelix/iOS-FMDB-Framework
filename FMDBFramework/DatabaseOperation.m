@@ -11,31 +11,46 @@
 #import "FMDatabase.h"
 #import "DatabaseConstants.h"
 
+static DatabaseHelper *databaseHelper;
+static DatabaseOperation *databaseOperation;
+
 @interface DatabaseOperation()
 
-@property (nonatomic, strong, readonly) DatabaseHelper *databaseHelper;
+@property (nonatomic, strong) FMDatabase *database;
 
 @end
 
 @implementation DatabaseOperation
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        _databaseHelper = [[DatabaseHelper alloc] init];
++ (void) initializeInstance{
+    if(databaseOperation == nil){
+        databaseOperation = [DatabaseOperation new];
+        databaseHelper = [DatabaseHelper new];
     }
-    return self;
+}
+
++ (DatabaseOperation *)getDatabaseOperation{
+    if(databaseOperation == nil){
+        [self initializeInstance];
+    }
+    return databaseOperation;
+}
+
+- (FMDatabase *)openDatabase{
+    if(self.database == nil){
+        self.database = [databaseHelper getDatabase];
+    }
+    return self.database;
 }
 
 -(void) addPersonWithName:(NSString *)name andHeight:(float)height
 {
-    FMDatabase *database = [self.databaseHelper getDatabase];
+    FMDatabase *database = [[DatabaseOperation getDatabaseOperation] openDatabase];
     
-    #ifdef DATABASE_SECRET_KEY
+#ifdef DATABASE_SECRET_KEY
     if(DATABASE_SECRET_KEY.length)
         [database setKey:DATABASE_SECRET_KEY];
-    #endif
+#endif
     
     NSString *query = [NSString stringWithFormat: @"INSERT INTO 'DemoTable' ('name', 'height') VALUES ('%@', '%f')", name, height];
     
