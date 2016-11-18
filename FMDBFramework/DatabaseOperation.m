@@ -29,7 +29,7 @@ static DatabaseOperation *databaseOperation;
     }
 }
 
-+ (DatabaseOperation *)getDatabaseOperation{
++ (DatabaseOperation *)databaseOperation{
     if(databaseOperation == nil){
         [self initializeInstance];
     }
@@ -45,7 +45,7 @@ static DatabaseOperation *databaseOperation;
 
 -(void) addPersonWithName:(NSString *)name andHeight:(float)height
 {
-    FMDatabase *database = [[DatabaseOperation getDatabaseOperation] openDatabase];
+    FMDatabase *database = [self openDatabase];
     
 #ifdef DATABASE_SECRET_KEY
     if(DATABASE_SECRET_KEY.length)
