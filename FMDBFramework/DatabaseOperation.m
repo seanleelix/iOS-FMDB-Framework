@@ -24,8 +24,8 @@ static DatabaseOperation *databaseOperation;
 
 + (void) initializeInstance{
     if(databaseOperation == nil){
-        databaseOperation = [DatabaseOperation new];
-        databaseHelper = [DatabaseHelper new];
+        databaseOperation = [[DatabaseOperation alloc] init];
+        databaseHelper = [[DatabaseHelper alloc] init];
     }
 }
 
