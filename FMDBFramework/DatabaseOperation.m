@@ -11,52 +11,44 @@
 #import "FMDatabase.h"
 #import "DatabaseConstants.h"
 
-static DatabaseHelper *databaseHelper;
-static DatabaseOperation *databaseOperation;
-
 @interface DatabaseOperation()
 
 @property (nonatomic, strong) FMDatabase *database;
+@property (nonatomic, strong) DatabaseHelper *databaseHelper;
 
 @end
 
 @implementation DatabaseOperation
 
-+ (void) initializeInstance{
-    if(databaseOperation == nil){
-        databaseOperation = [[DatabaseOperation alloc] init];
-        databaseHelper = [[DatabaseHelper alloc] init];
-    }
-}
-
-+ (DatabaseOperation *)databaseOperation{
-    if(databaseOperation == nil){
-        [self initializeInstance];
-    }
++ (DatabaseOperation *)sharedDatabaseOperation{
+    static dispatch_once_t once;
+    static DatabaseOperation *databaseOperation;
+    dispatch_once(&once, ^ { databaseOperation = [[DatabaseOperation alloc] init]; });
     return databaseOperation;
 }
 
-- (FMDatabase *)openDatabase{
-    if(self.database == nil){
-        self.database = [databaseHelper getDatabase];
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.databaseHelper = [[DatabaseHelper alloc] init];
+        self.database = [self.databaseHelper getDatabase];
+        
+#ifdef DATABASE_SECRET_KEY
+        if(DATABASE_SECRET_KEY.length)
+            [database setKey:DATABASE_SECRET_KEY];
+#endif
     }
-    return self.database;
+    return self;
 }
 
 -(void) addPersonWithName:(NSString *)name andHeight:(float)height
 {
-    FMDatabase *database = [self openDatabase];
-    
-#ifdef DATABASE_SECRET_KEY
-    if(DATABASE_SECRET_KEY.length)
-        [database setKey:DATABASE_SECRET_KEY];
-#endif
     
     NSString *query = [NSString stringWithFormat: @"INSERT INTO 'DemoTable' ('name', 'height') VALUES ('%@', '%f')", name, height];
     
-    [database executeUpdate:query];
+    [self.database executeUpdate:query];
     
-    [database close];
+    [self.database close];
 }
 
 @end

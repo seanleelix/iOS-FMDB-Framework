@@ -10,7 +10,7 @@
 
 @interface DatabaseOperation : NSObject
 
-+ (DatabaseOperation *) databaseOperation;
++ (DatabaseOperation *)sharedDatabaseOperation;
 
 - (void) addPersonWithName:(NSString *)name andHeight:(float)height;
 
